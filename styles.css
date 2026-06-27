@@ -701,6 +701,10 @@ h2 {
   overflow-x: auto;
 }
 
+.mobile-payment-cards {
+  display: none;
+}
+
 table {
   width: 100%;
   min-width: 1040px;
@@ -791,6 +795,62 @@ tbody tr:hover {
   color: var(--muted);
   opacity: 0.8;
   box-shadow: none;
+}
+
+.mobile-empty {
+  padding: 18px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.mobile-payment-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-top: 1px solid rgba(33, 83, 70, 0.11);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.mobile-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobile-card-top strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1.05rem;
+}
+
+.mobile-card-top span:not(.status-badge),
+.mobile-card-grid b {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.mobile-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mobile-card-grid span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(33, 83, 70, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  font-weight: 900;
+}
+
+.mobile-card-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
 }
 
 .admin-panel {
@@ -1207,6 +1267,26 @@ textarea:focus {
   .panel-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .timeline-panel .table-shell {
+    display: none;
+  }
+
+  .mobile-payment-cards {
+    display: grid;
+  }
+
+  .mobile-card-top {
+    flex-direction: column;
+  }
+
+  .mobile-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-card-actions .link-button {
+    width: 100%;
   }
 
   .metric-card {

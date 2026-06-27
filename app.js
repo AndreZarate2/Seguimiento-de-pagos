@@ -45,6 +45,7 @@ function bindElements() {
   els.adminIdentity = document.getElementById("adminIdentity");
   els.searchInput = document.getElementById("searchInput");
   els.paymentRows = document.getElementById("paymentRows");
+  els.mobilePaymentCards = document.getElementById("mobilePaymentCards");
   els.tableSummary = document.getElementById("tableSummary");
   els.totalAmount = document.getElementById("totalAmount");
   els.paidAmount = document.getElementById("paidAmount");
@@ -106,6 +107,7 @@ function bindEvents() {
   els.monthSelect.addEventListener("change", () => fillFormFromMonth(Number(els.monthSelect.value)));
   els.receiptFile.addEventListener("change", handleFilePreview);
   els.paymentRows.addEventListener("click", handleTableClick);
+  els.mobilePaymentCards.addEventListener("click", handleTableClick);
   els.closeReceiptBtn.addEventListener("click", () => els.receiptDialog.close());
 }
 
@@ -281,7 +283,9 @@ async function loadPayments() {
 
 function mergePayments(rows) {
   const byMonth = new Map(rows.map((row) => [Number(row.month_number), normalizePayment(row)]));
-  return buildDefaultPayments().map((row) => ({ ...row, ...(byMonth.get(row.month_number) || {}) }));
+  return buildDefaultPayments()
+    .map((row) => ({ ...row, ...(byMonth.get(row.month_number) || {}) }))
+    .sort((a, b) => Number(a.month_number) - Number(b.month_number));
 }
 
 function normalizePayment(row) {
@@ -674,6 +678,9 @@ function renderRows() {
 
   if (!rows.length) {
     els.paymentRows.innerHTML = `<tr><td colspan="${emptyColspan}">No hay cuotas que coincidan con la busqueda.</td></tr>`;
+    if (els.mobilePaymentCards) {
+      els.mobilePaymentCards.innerHTML = `<div class="mobile-empty">No hay cuotas que coincidan con la busqueda.</div>`;
+    }
     return;
   }
 
@@ -703,6 +710,47 @@ function renderRows() {
           <td>${receiptButton}</td>
           ${editButton}
         </tr>
+      `;
+    })
+    .join("");
+
+  renderMobilePaymentCards(rows, admin);
+}
+
+function renderMobilePaymentCards(rows, admin) {
+  if (!els.mobilePaymentCards) return;
+
+  els.mobilePaymentCards.innerHTML = rows
+    .map((row) => {
+      const status = getStatus(row);
+      const dueDate = row.due_date ? formatDate(row.due_date) : "Sin fecha programada";
+      const paidDate = row.paid_at ? formatDate(row.paid_at) : "Pendiente";
+      const receiptButton = row.receipt_url
+        ? `<button class="link-button" data-action="view" data-month="${row.month_number}" type="button">Ver comprobante</button>`
+        : `<button class="link-button" type="button" disabled>Sin comprobante</button>`;
+      const editButton = admin
+        ? `<button class="link-button" data-action="edit" data-month="${row.month_number}" type="button">Editar pago</button>`
+        : "";
+
+      return `
+        <article class="mobile-payment-card">
+          <div class="mobile-card-top">
+            <div>
+              <strong>${escapeHtml(row.period_label)}</strong>
+              <span>Programado: ${dueDate}</span>
+            </div>
+            <span class="status-badge ${status.className}">${status.label}</span>
+          </div>
+          <div class="mobile-card-grid">
+            <span><b>Cuota</b>${formatMoney(row.due_amount)}</span>
+            <span><b>Pagado</b>${formatMoney(row.paid_amount)}</span>
+            <span><b>Fecha de pago</b>${paidDate}</span>
+          </div>
+          <div class="mobile-card-actions">
+            ${receiptButton}
+            ${editButton}
+          </div>
+        </article>
       `;
     })
     .join("");
