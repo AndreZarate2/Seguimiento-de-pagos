@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Seguimiento de pagos Andre</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="page-glow glow-left"></div>
+    <div class="page-glow glow-right"></div>
+
+    <div class="app-frame">
+      <aside class="side-rail" aria-label="Menu principal">
+        <div class="brand-block">
+          <div class="personal-logo" aria-label="Logo personal Andre Zarate">
+            <span>AZ</span>
+          </div>
+          <div>
+            <strong>Pagos Andre</strong>
+            <span>Seguimiento personal</span>
+          </div>
+        </div>
+
+        <nav class="side-nav">
+          <a class="nav-item is-active" href="#resumen">
+            <span class="nav-mark">01</span>
+            <span>Resumen</span>
+          </a>
+          <button id="adminToggleBtn" class="nav-item nav-button" type="button">
+            <span class="nav-mark">02</span>
+            <span id="adminToggleLabel">Panel admin</span>
+          </button>
+        </nav>
+
+        <div class="side-status">
+          <span>Estado actual</span>
+          <strong id="sideStatusLabel">Sin pagos registrados</strong>
+          <div class="mini-progress">
+            <span id="sideProgressBar"></span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <div class="page-title">
+            <span class="eyebrow">Dashboard de pagos</span>
+            <h1>Seguimiento mensual</h1>
+          </div>
+
+          <div class="top-actions">
+            <label class="search-box">
+              <span>Buscar</span>
+              <input id="searchInput" type="search" placeholder="Mes, estado o fecha">
+            </label>
+            <span id="connectionStatus" class="connection-status">Sincronizando</span>
+            <button id="refreshBtn" class="button button-ghost" type="button">Actualizar</button>
+            <button id="logoutBtn" class="button button-ghost is-hidden" type="button">Cerrar sesion</button>
+          </div>
+        </header>
+
+        <main class="dashboard">
+          <section id="resumen" class="summary-grid" aria-label="Resumen de pagos">
+            <article class="metric-card metric-total">
+              <span class="metric-label">Total pactado</span>
+              <strong id="totalAmount">S/ 5,420.64</strong>
+              <span>12 cuotas de S/ 451.72</span>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">Pagado</span>
+              <strong id="paidAmount">S/ 0.00</strong>
+              <span id="paidMonths">0 de 12 cuotas</span>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">Pendiente</span>
+              <strong id="remainingAmount">S/ 5,420.64</strong>
+              <span id="nextPayment">Mes 1 pendiente</span>
+            </article>
+            <article class="metric-card metric-accent">
+              <span class="metric-label">Adelanto</span>
+              <strong id="extraAmount">S/ 0.00</strong>
+              <span id="lastPayment">Sin pagos registrados</span>
+            </article>
+          </section>
+
+          <section id="graficos" class="analytics-grid" aria-label="Graficos de pagos">
+            <article class="panel chart-panel chart-main">
+              <div class="panel-header compact-header">
+                <div>
+                  <span class="eyebrow">Evolucion</span>
+                  <h2>Pagos acumulados</h2>
+                </div>
+                <span id="chartAverage" class="panel-pill">Promedio S/ 0.00</span>
+              </div>
+              <div class="line-chart-wrap">
+                <svg id="paymentLineChart" class="line-chart" viewBox="0 0 720 260" role="img" aria-label="Grafico de pagos acumulados"></svg>
+              </div>
+            </article>
+
+            <article class="panel chart-panel">
+              <div class="panel-header compact-header">
+                <div>
+                  <span class="eyebrow">Distribucion</span>
+                  <h2>Avance del total</h2>
+                </div>
+              </div>
+              <div class="donut-layout">
+                <div id="donutChart" class="donut-chart">
+                  <strong id="donutPercent">0%</strong>
+                  <span>avance</span>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="legend-dot dot-paid"></i><b id="chartPaid">S/ 0.00</b> pagado</span>
+                  <span><i class="legend-dot dot-pending"></i><b id="chartPending">S/ 5,420.64</b> pendiente</span>
+                  <span><i class="legend-dot dot-extra"></i><b id="chartExtra">S/ 0.00</b> adelanto</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel chart-panel">
+              <div class="panel-header compact-header">
+                <div>
+                  <span class="eyebrow">Cuotas</span>
+                  <h2>Estado mensual</h2>
+                </div>
+                <span id="chartCounts" class="panel-pill">0 / 12</span>
+              </div>
+              <div id="monthlyBars" class="monthly-bars" aria-label="Barras por mes"></div>
+            </article>
+          </section>
+
+          <section class="progress-panel" aria-label="Avance total">
+            <div class="progress-copy">
+              <div>
+                <span>Avance general</span>
+                <small>Control acumulado contra el total pactado</small>
+              </div>
+              <strong id="progressPercent">0%</strong>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <span id="progressBar"></span>
+            </div>
+          </section>
+
+          <section id="contentGrid" class="content-grid">
+            <section id="cuotas" class="panel timeline-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="eyebrow">Seguimiento</span>
+                  <h2>Cuotas mensuales</h2>
+                </div>
+                <span id="tableSummary" class="panel-pill">0 pagadas</span>
+              </div>
+              <div class="table-shell">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mes</th>
+                      <th>Cuota</th>
+                      <th>Pagado</th>
+                      <th>Estado</th>
+                      <th>Fecha de pago</th>
+                      <th>Comprobante</th>
+                      <th class="admin-column is-hidden">Editar</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paymentRows"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <aside id="adminPanel" class="panel admin-panel is-hidden">
+              <div class="panel-header">
+                <div>
+                  <span class="eyebrow">Panel admin</span>
+                  <h2>Registrar pago</h2>
+                </div>
+                <span id="adminIdentity" class="panel-pill">Sesion activa</span>
+              </div>
+
+              <form id="adminForm" class="admin-form">
+                <label>
+                  Mes
+                  <select id="monthSelect" required></select>
+                </label>
+
+                <div class="form-row">
+                  <label>
+                    Monto pagado
+                    <input id="paidInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="451.72" required>
+                  </label>
+                  <label>
+                    Fecha de pago
+                    <input id="paidDateInput" type="date">
+                  </label>
+                </div>
+
+                <label>
+                  Fecha programada
+                  <input id="dueDateInput" type="date">
+                </label>
+
+                <label>
+                  Nota
+                  <textarea id="notesInput" rows="3" placeholder="Operacion, banco o referencia"></textarea>
+                </label>
+
+                <label class="upload-drop" for="receiptFile">
+                  <input id="receiptFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+                  <span>Subir comprobante</span>
+                  <small>PNG, JPG, WEBP o GIF</small>
+                </label>
+
+                <div id="receiptPreview" class="receipt-preview is-empty">
+                  <span>Vista previa</span>
+                </div>
+
+                <div class="form-actions">
+                  <button id="savePaymentBtn" class="button button-primary" type="submit">Guardar pago</button>
+                  <button id="resetFormBtn" class="button button-ghost" type="button">Limpiar</button>
+                </div>
+              </form>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <dialog id="loginDialog" class="dialog login-dialog">
+      <form id="loginForm" class="dialog-card login-card">
+        <div class="dialog-header login-header">
+          <div>
+            <span class="eyebrow">Acceso privado</span>
+            <h2>Login</h2>
+          </div>
+          <button id="closeLoginBtn" class="icon-button" type="button" aria-label="Cerrar">x</button>
+        </div>
+
+        <label class="login-field">
+          Correo
+          <span>
+            <input id="emailInput" type="email" autocomplete="username" required>
+            <small>@</small>
+          </span>
+        </label>
+        <label class="login-field">
+          Contrasena
+          <span>
+            <input id="passwordInput" type="password" autocomplete="current-password" required>
+            <small>*</small>
+          </span>
+        </label>
+
+        <div class="login-options">
+          <label class="check-line">
+            <input type="checkbox">
+            Recordarme
+          </label>
+          <span>Panel admin</span>
+        </div>
+
+        <button id="loginSubmitBtn" class="button login-submit" type="submit">Ingresar</button>
+      </form>
+    </dialog>
+
+    <dialog id="receiptDialog" class="dialog receipt-dialog">
+      <div class="dialog-card">
+        <div class="dialog-header">
+          <div>
+            <span id="receiptMonth" class="eyebrow">Comprobante</span>
+            <h2 id="receiptTitle">Imagen registrada</h2>
+          </div>
+          <button id="closeReceiptBtn" class="icon-button" type="button" aria-label="Cerrar">x</button>
+        </div>
+        <img id="receiptImage" alt="Comprobante de pago">
+        <div id="receiptDetails" class="receipt-details"></div>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
